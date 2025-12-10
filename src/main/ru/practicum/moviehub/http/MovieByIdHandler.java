@@ -1,6 +1,7 @@
 package ru.practicum.moviehub.http;
 
 import com.sun.net.httpserver.HttpExchange;
+import ru.practicum.moviehub.api.ErrorResponse;
 import ru.practicum.moviehub.model.Movie;
 import ru.practicum.moviehub.store.MoviesStore;
 
@@ -20,7 +21,8 @@ public class MovieByIdHandler extends BaseHttpHandler {
 
         // Проверяем формат пути: /movies/{id}
         if (pathParts.length != 3) {
-            sendResponse(exchange, 404, "{\"error\":\"Не найдено\"}");
+            ErrorResponse error = new ErrorResponse("Не найдено");
+            sendResponse(exchange, 404, GSON.toJson(error));
             return;
         }
 
@@ -31,14 +33,16 @@ public class MovieByIdHandler extends BaseHttpHandler {
         try {
             id = Long.parseLong(idParam);
         } catch (NumberFormatException e) {
-            sendResponse(exchange, 400, "{\"error\":\"Некорректный ID\"}");
+            ErrorResponse error = new ErrorResponse("Некорректный ID");
+            sendResponse(exchange, 400, GSON.toJson(error));
             return;
         }
 
         // Ищем фильм
         Movie movie = store.getMovieById(id);
         if (movie == null) {
-            sendResponse(exchange, 404, "{\"error\":\"Фильм не найден\"}");
+            ErrorResponse error = new ErrorResponse("Фильм не найден");
+            sendResponse(exchange, 404, GSON.toJson(error));
             return;
         }
 
@@ -54,7 +58,8 @@ public class MovieByIdHandler extends BaseHttpHandler {
 
         // Проверяем формат пути: /movies/{id}
         if (pathParts.length != 3) {
-            sendResponse(exchange, 404, "{\"error\":\"Не найдено\"}");
+            ErrorResponse error = new ErrorResponse("Не найдено");
+            sendResponse(exchange, 404, GSON.toJson(error));
             return;
         }
 
@@ -65,14 +70,16 @@ public class MovieByIdHandler extends BaseHttpHandler {
         try {
             id = Long.parseLong(idParam);
         } catch (NumberFormatException e) {
-            sendResponse(exchange, 400, "{\"error\":\"Некорректный ID\"}");
+            ErrorResponse error = new ErrorResponse("Некорректный ID");
+            sendResponse(exchange, 400, GSON.toJson(error));
             return;
         }
 
         // Удаляем фильм
         boolean deleted = store.deleteMovie(id);
         if (!deleted) {
-            sendResponse(exchange, 404, "{\"error\":\"Фильм не найден\"}");
+            ErrorResponse error = new ErrorResponse("Фильм не найден");
+            sendResponse(exchange, 404, GSON.toJson(error));
             return;
         }
 

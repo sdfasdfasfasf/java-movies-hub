@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+import ru.practicum.moviehub.api.ErrorResponse;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -26,22 +27,26 @@ public abstract class BaseHttpHandler implements HttpHandler {
                     handleDelete(exchange);
                     break;
                 default:
-                    sendResponse(exchange, 405, "{\"error\":\"Метод не поддерживается\"}");
+                    ErrorResponse error = new ErrorResponse("Метод не поддерживается");
+                    sendResponse(exchange, 405, GSON.toJson(error));
             }
         } catch (Exception e) {
             e.printStackTrace();
-            sendResponse(exchange, 500, "{\"error\":\"Внутренняя ошибка сервера\"}");
+            ErrorResponse error = new ErrorResponse("Внутренняя ошибка сервера");
+            sendResponse(exchange, 500, GSON.toJson(error));
         }
     }
 
     protected abstract void handleGet(HttpExchange exchange) throws IOException;
 
     protected void handlePost(HttpExchange exchange) throws IOException {
-        sendResponse(exchange, 405, "{\"error\":\"Метод не поддерживается\"}");
+        ErrorResponse error = new ErrorResponse("Метод не поддерживается");
+        sendResponse(exchange, 405, GSON.toJson(error));
     }
 
     protected void handleDelete(HttpExchange exchange) throws IOException {
-        sendResponse(exchange, 405, "{\"error\":\"Метод не поддерживается\"}");
+        ErrorResponse error = new ErrorResponse("Метод не поддерживается");
+        sendResponse(exchange, 405, GSON.toJson(error));
     }
 
     protected void sendResponse(HttpExchange exchange, int statusCode, String response) throws IOException {

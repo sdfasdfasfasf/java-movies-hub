@@ -27,7 +27,8 @@ public class MoviesHandler extends BaseHttpHandler {
         // значит это запрос к /movies/{id} или /movies/{id}/something
         // и он должен обрабатываться другим обработчиком
         if (!path.equals("/movies")) {
-            sendResponse(exchange, 404, "{\"error\":\"Не найдено\"}");
+            ErrorResponse error = new ErrorResponse("Не найдено");
+            sendResponse(exchange, 404, GSON.toJson(error));
             return;
         }
 
@@ -51,7 +52,8 @@ public class MoviesHandler extends BaseHttpHandler {
                     int year = Integer.parseInt(yearParam);
                     movies = store.getMoviesByYear(year);
                 } catch (NumberFormatException e) {
-                    sendResponse(exchange, 400, "{\"error\":\"Некорректный параметр запроса - 'year'\"}");
+                    ErrorResponse error = new ErrorResponse("Некорректный параметр запроса - 'year'");
+                    sendResponse(exchange, 400, GSON.toJson(error));
                     return;
                 }
             } else {
@@ -71,7 +73,8 @@ public class MoviesHandler extends BaseHttpHandler {
         // Проверяем Content-Type
         String contentType = exchange.getRequestHeaders().getFirst("Content-Type");
         if (contentType == null || !contentType.contains("application/json")) {
-            sendResponse(exchange, 415, "{\"error\":\"Unsupported Media Type\"}");
+            ErrorResponse error = new ErrorResponse("Unsupported Media Type");
+            sendResponse(exchange, 415, GSON.toJson(error));
             return;
         }
 
@@ -106,7 +109,8 @@ public class MoviesHandler extends BaseHttpHandler {
 
         } catch (Exception e) {
             // Некорректный JSON
-            sendResponse(exchange, 400, "{\"error\":\"Некорректный JSON\"}");
+            ErrorResponse error = new ErrorResponse("Некорректный JSON");
+            sendResponse(exchange, 400, GSON.toJson(error));
         }
     }
 }

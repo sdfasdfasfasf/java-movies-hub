@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import ru.practicum.moviehub.api.ErrorResponse;
 import ru.practicum.moviehub.model.Movie;
 import ru.practicum.moviehub.store.MoviesStore;
 
@@ -197,11 +198,14 @@ public class MoviesApiTest {
         HttpResponse<String> response = createMovie(EMPTY_TITLE_MOVIE_JSON);
 
         assertStatusCode(response, STATUS_UNPROCESSABLE_ENTITY, "Должен вернуть 422 при пустом title");
-        assertErrorResponse(response);
 
         String body = response.body();
-        assertTrue(body.contains("Ошибка валидации"), "Должна быть ошибка валидации");
-        assertTrue(body.contains("название не должно быть пустым"), "Должна быть детальная ошибка");
+        ErrorResponse errorResponse = GSON.fromJson(body, ErrorResponse.class);
+
+        assertEquals("Ошибка валидации", errorResponse.getError(), "Должна быть ошибка валидации");
+        assertNotNull(errorResponse.getDetails(), "Details не должен быть null");
+        assertTrue(errorResponse.getDetails().contains("название не должно быть пустым"),
+                "Должна быть детальная ошибка");
     }
 
     @Test
